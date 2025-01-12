@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24  # 24 часа
 
+    # Sentry (опционально)
+    sentry_dsn: str | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

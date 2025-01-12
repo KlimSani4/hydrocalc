@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.user import UserCreate, UserResponse, Token
+from app.schemas.user import UserCreate, Token
 from app.services.auth import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post(
     "/register",
-    response_model=UserResponse,
+    response_model=Token,
     status_code=status.HTTP_201_CREATED
 )
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
@@ -19,6 +19,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     Регистрация нового пользователя.
 
     Проверяет уникальность email и создаёт аккаунт.
+    Сразу возвращает токен для автоматической авторизации.
     """
     existing = AuthService.get_user_by_email(db, user_data.email)
     if existing:
@@ -28,7 +29,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         )
 
     user = AuthService.create_user(db, user_data.email, user_data.password)
-    return user
+    token = AuthService.create_access_token(user.id)
+    return Token(access_token=token)
 
 
 @router.post("/login", response_model=Token)

@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import auth_router, calculate_router, history_router
+from app.integrations import init_sentry
+
+# Инициализация Sentry (до создания приложения)
+init_sentry()
 
 app = FastAPI(
     title="HydroCalc API",

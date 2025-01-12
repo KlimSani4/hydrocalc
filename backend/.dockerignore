@@ -1,0 +1,46 @@
+# Backend .dockerignore
+# Исключаем файлы, которые не нужны в Docker-образе
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+.env
+*.egg-info/
+.eggs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Тесты
+tests/
+pytest.ini
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Документация
+*.md
+docs/
+
+# Временные файлы
+*.log
+*.tmp
+.DS_Store
