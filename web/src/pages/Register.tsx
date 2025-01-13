@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { reachGoal, GOALS } from '../utils/metrika';
 
 /**
  * Страница регистрации
@@ -35,6 +36,7 @@ export default function Register() {
 
     try {
       await register({ email, password });
+      reachGoal(GOALS.USER_REGISTERED);
       navigate('/');
     } catch (err: unknown) {
       // Обработка ошибок от сервера

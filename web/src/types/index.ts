@@ -40,30 +40,59 @@ export interface CalculateRequest {
   activity: Activity;
 }
 
+// Детализация по категории
+export interface CategoryBreakdown {
+  count: number;
+  norm: number;
+  subtotal: number;
+}
+
+// Детализация по всем категориям
+export interface Breakdown {
+  junior: CategoryBreakdown;
+  middle: CategoryBreakdown;
+  senior: CategoryBreakdown;
+  staff: CategoryBreakdown;
+}
+
+// Коэффициенты
+export interface Coefficients {
+  season: number;
+  activity: number;
+}
+
 // Результат расчёта
 export interface CalculateResult {
-  id?: number;
-  total_liters: number;
-  junior_liters: number;
-  middle_liters: number;
-  senior_liters: number;
-  staff_liters: number;
-  season: Season;
-  activity: Activity;
-  created_at?: string;
+  total_water: number;
+  base_total: number;
+  breakdown: Breakdown;
+  coefficients: Coefficients;
+  total_people: number;
+}
+
+// Параметры расчёта
+export interface CalculationParams {
+  junior_count: number;
+  middle_count: number;
+  senior_count: number;
+  staff_count: number;
+  season: string;
+  activity: string;
 }
 
 // Элемент истории
 export interface HistoryItem {
   id: number;
-  junior_count: number;
-  middle_count: number;
-  senior_count: number;
-  staff_count: number;
-  season: Season;
-  activity: Activity;
-  total_liters: number;
+  total_water: number;
   created_at: string;
+  params: CalculationParams;
+}
+
+// Детальный элемент истории
+export interface HistoryDetail extends HistoryItem {
+  breakdown: Breakdown;
+  coefficients: Coefficients;
+  total_people: number;
 }
 
 // Контекст авторизации

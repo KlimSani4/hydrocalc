@@ -9,12 +9,12 @@ interface HistoryListProps {
  */
 export default function HistoryList({ items }: HistoryListProps) {
   // Названия для отображения
-  const seasonNames = {
+  const seasonNames: Record<string, string> = {
     cold: 'Холодный',
     warm: 'Тёплый',
   };
 
-  const activityNames = {
+  const activityNames: Record<string, string> = {
     normal: 'Обычная',
     sport: 'Спорт',
     trip: 'Поход',
@@ -65,7 +65,7 @@ export default function HistoryList({ items }: HistoryListProps) {
             {/* Результат */}
             <div>
               <div className="text-2xl font-bold text-water-600">
-                {item.total_liters.toFixed(1)} л
+                {item.total_water.toFixed(1)} л
               </div>
               <div className="text-sm text-gray-500 mt-1">
                 {formatDate(item.created_at)}
@@ -75,31 +75,31 @@ export default function HistoryList({ items }: HistoryListProps) {
             {/* Параметры */}
             <div className="text-right text-sm">
               <div className="text-gray-600">
-                {seasonNames[item.season]} | {activityNames[item.activity]}
+                {seasonNames[item.params.season] || item.params.season} | {activityNames[item.params.activity] || item.params.activity}
               </div>
             </div>
           </div>
 
           {/* Группы */}
           <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-2 text-xs">
-            {item.junior_count > 0 && (
+            {item.params.junior_count > 0 && (
               <span className="bg-water-100 text-water-700 px-2 py-1 rounded">
-                Junior: {item.junior_count}
+                Младшие: {item.params.junior_count}
               </span>
             )}
-            {item.middle_count > 0 && (
+            {item.params.middle_count > 0 && (
               <span className="bg-water-100 text-water-700 px-2 py-1 rounded">
-                Middle: {item.middle_count}
+                Средние: {item.params.middle_count}
               </span>
             )}
-            {item.senior_count > 0 && (
+            {item.params.senior_count > 0 && (
               <span className="bg-water-100 text-water-700 px-2 py-1 rounded">
-                Senior: {item.senior_count}
+                Старшие: {item.params.senior_count}
               </span>
             )}
-            {item.staff_count > 0 && (
+            {item.params.staff_count > 0 && (
               <span className="bg-water-100 text-water-700 px-2 py-1 rounded">
-                Staff: {item.staff_count}
+                Персонал: {item.params.staff_count}
               </span>
             )}
           </div>

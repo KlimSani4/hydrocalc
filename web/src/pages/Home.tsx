@@ -2,6 +2,7 @@ import { useState } from 'react';
 import CalculatorForm from '../components/CalculatorForm';
 import ResultCard from '../components/ResultCard';
 import { calculateWater } from '../api/client';
+import { reachGoal, GOALS } from '../utils/metrika';
 import type { CalculateRequest, CalculateResult } from '../types';
 
 /**
@@ -19,6 +20,7 @@ export default function Home() {
     try {
       const response = await calculateWater(data);
       setResult(response);
+      reachGoal(GOALS.CALCULATION_CREATED);
     } catch (err) {
       setError('Ошибка при расчёте. Попробуйте ещё раз.');
       console.error('Calculation error:', err);
