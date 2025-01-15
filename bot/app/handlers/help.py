@@ -39,6 +39,7 @@ async def cmd_help(message: Message) -> None:
         "<b>Команды:</b>\n"
         "/start — приветствие\n"
         "/calculate — начать расчёт\n"
+        "/history — история расчётов\n"
         "/help — эта справка"
     )
 

@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from app.states import CalculationStates
 from app.keyboards import get_season_keyboard, get_activity_keyboard
-from app.services import ApiClient
+from app.services import ApiClient, save_calculation
 
 router = Router()
 api_client = ApiClient()
@@ -182,20 +182,26 @@ async def process_activity(callback: CallbackQuery, state: FSMContext) -> None:
             f"• Персонал: {data['staff_count']} чел.\n"
             f"• Сезон: {season_text}\n"
             f"• Активность: {activity_names.get(data['activity'], data['activity'])}\n\n"
-            f"💧 <b>Итого:</b> {result.total_liters:.1f} литров в день\n"
+            f"💧 <b>Итого:</b> {result.total_water:.1f} литров в день\n"
+            f"👥 <b>Всего людей:</b> {result.total_people}\n"
         )
 
         # Добавляем детализацию, если есть
         if result.breakdown:
+            category_names = {
+                "junior": "Младшие",
+                "middle": "Средние",
+                "senior": "Старшие",
+                "staff": "Персонал",
+            }
             response += "\n<b>Детализация:</b>\n"
-            for group, liters in result.breakdown.items():
-                response += f"• {group}: {liters:.1f} л\n"
-
-        # Добавляем рекомендации, если есть
-        if result.recommendations:
-            response += f"\n💡 <i>{result.recommendations}</i>"
+            for group, info in result.breakdown.items():
+                name = category_names.get(group, group)
+                response += f"• {name}: {info['subtotal']:.1f} л ({info['count']} чел. × {info['norm']} л)\n"
 
         await callback.message.answer(response, parse_mode="HTML")
+
+        save_calculation(callback.from_user.id, result.total_water, data)
     else:
         # Если API недоступен, делаем локальный расчёт
         total = calculate_local(data)
@@ -215,6 +221,8 @@ async def process_activity(callback: CallbackQuery, state: FSMContext) -> None:
         )
 
         await callback.message.answer(response, parse_mode="HTML")
+
+        save_calculation(callback.from_user.id, total, data)
 
     await callback.answer()
 

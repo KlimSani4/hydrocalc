@@ -12,9 +12,9 @@ from app.config import config
 class CalculationResult:
     """Результат расчёта потребления воды."""
 
-    total_liters: float
+    total_water: float
     breakdown: dict
-    recommendations: Optional[str] = None
+    total_people: int = 0
 
 
 class ApiClient:
@@ -45,7 +45,7 @@ class ApiClient:
             senior_count: Количество старших школьников (15-17 лет).
             staff_count: Количество персонала (18+ лет).
             season: Сезон ('cold' или 'warm').
-            activity: Тип активности ('normal', 'sports', 'hiking').
+            activity: Тип активности ('normal', 'sport', 'trip').
 
         Returns:
             CalculationResult при успехе, None при ошибке.
@@ -67,9 +67,9 @@ class ApiClient:
                     if response.status == 200:
                         data = await response.json()
                         return CalculationResult(
-                            total_liters=data.get("total_liters", 0),
+                            total_water=data.get("total_water", 0),
                             breakdown=data.get("breakdown", {}),
-                            recommendations=data.get("recommendations"),
+                            total_people=data.get("total_people", 0),
                         )
                     else:
                         return None

@@ -6,6 +6,7 @@ from aiogram import Router
 from .start import router as start_router
 from .help import router as help_router
 from .calculate import router as calculate_router
+from .history import router as history_router
 
 
 def setup_routers() -> Router:
@@ -20,5 +21,6 @@ def setup_routers() -> Router:
     main_router.include_router(start_router)
     main_router.include_router(help_router)
     main_router.include_router(calculate_router)
+    main_router.include_router(history_router)
 
     return main_router
