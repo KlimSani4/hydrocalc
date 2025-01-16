@@ -1,0 +1,43 @@
+# Web .dockerignore
+# Исключаем файлы, которые не нужны в Docker-образе
+
+# Dependencies
+node_modules/
+
+# Build output (пересобираем внутри контейнера)
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Документация
+*.md
+
+# Тесты
+coverage/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Временные файлы
+*.log
+.DS_Store
+npm-debug.log*
