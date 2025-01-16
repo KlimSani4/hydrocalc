@@ -1,0 +1,66 @@
+# Render Blueprint для HydroCalc
+# Документация: https://render.com/docs/blueprint-spec
+#
+# Этот файл описывает инфраструктуру проекта для автоматического деплоя на Render.
+# При подключении репозитория Render автоматически создаст все описанные сервисы.
+
+services:
+  # Backend API на FastAPI
+  - type: web
+    name: hydrocalc-api
+    runtime: python
+    region: frankfurt  # Ближайший регион к России
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Подключение к БД - автоматически подставляется из созданной базы
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hydrocalc-db
+          property: connectionString
+      # Секретный ключ для JWT - генерируется автоматически
+      - key: SECRET_KEY
+        generateValue: true
+      # Sentry DSN - опционально, вводится вручную в Dashboard
+      - key: SENTRY_DSN
+        sync: false
+      # Окружение
+      - key: ENVIRONMENT
+        value: production
+
+  # Frontend как статический сайт
+  - type: web
+    name: hydrocalc-web
+    runtime: static
+    region: frankfurt
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    # Настройки для SPA - все маршруты перенаправляются на index.html
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    envVars:
+      # URL API для фронтенда
+      - key: VITE_API_URL
+        value: https://hydrocalc-api.onrender.com/api/v1
+
+# База данных PostgreSQL
+databases:
+  - name: hydrocalc-db
+    region: frankfurt
+    plan: free  # Free план - 256MB, автоматическое удаление через 90 дней неактивности
+    databaseName: hydrocalc
+    user: hydrocalc

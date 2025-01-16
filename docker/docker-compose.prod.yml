@@ -1,0 +1,101 @@
+# Production Docker Compose для HydroCalc
+# Используется для деплоя на собственный сервер (VPS, dedicated)
+#
+# Запуск: docker compose -f docker/docker-compose.prod.yml up -d
+# Остановка: docker compose -f docker/docker-compose.prod.yml down
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: hydrocalc-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://hydrocalc:${POSTGRES_PASSWORD}@postgres:5432/hydrocalc
+      - SECRET_KEY=${SECRET_KEY}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hydrocalc-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Frontend (nginx + static files)
+  web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+    container_name: hydrocalc-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - API_UPSTREAM=backend:8000
+    depends_on:
+      - backend
+    volumes:
+      # SSL сертификаты (опционально, для HTTPS)
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - hydrocalc-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: hydrocalc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hydrocalc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: hydrocalc
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Скрипты инициализации (если нужны)
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    networks:
+      - hydrocalc-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hydrocalc -d hydrocalc"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Redis для кэширования и сессий
+  redis:
+    image: redis:7-alpine
+    container_name: hydrocalc-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret}
+    volumes:
+      - redis_data:/data
+    networks:
+      - hydrocalc-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    name: hydrocalc-postgres-data
+  redis_data:
+    name: hydrocalc-redis-data
+
+networks:
+  hydrocalc-network:
+    name: hydrocalc-network
+    driver: bridge
