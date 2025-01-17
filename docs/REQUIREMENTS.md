@@ -40,21 +40,21 @@ V = Σ(Nᵢ × Vᵢ) × Ks × Ka
 - [x] Аутентификация (JWT)
 - [x] Расчёт нормы воды
 - [x] История расчётов
-- [ ] Интеграция Sentry
-- [ ] Деплой на Render
+- [x] Интеграция Sentry
+- [x] Конфиги для деплоя на Render
 
 ### 2. Web-приложение (React + Vite + Tailwind)
 - [x] Экран входа
 - [x] Экран регистрации
 - [x] Экран калькулятора
 - [x] Экран истории
-- [ ] Интеграция Яндекс Метрики
+- [x] Интеграция Яндекс Метрики
 
 ### 3. Telegram-бот (aiogram 3)
 - [x] /start - приветствие
 - [x] /help - справка
 - [x] /calculate - расчёт (FSM)
-- [ ] /history - история (опционально, бот анонимный)
+- [x] /history - история сессии
 
 ### 4. Мобильное приложение (React Native)
 - [x] Экран входа
@@ -64,15 +64,17 @@ V = Σ(Nᵢ × Vᵢ) × Ks × Ka
 - [x] Автономная работа
 
 ### 5. Внешние интеграции
-- [ ] Sentry (мониторинг ошибок)
-- [ ] Яндекс Метрика (статистика web)
+- [x] Sentry (мониторинг ошибок)
+- [x] Яндекс Метрика (статистика web)
   - Цели: calculation_created, user_registered, export_pdf
 
 ### 6. Инфраструктура
 - [x] Docker Compose (локальная разработка)
 - [x] Dockerfile backend
 - [x] Dockerfile bot
-- [ ] Деплой на Render
+- [x] Dockerfile web (nginx)
+- [x] render.yaml (Render Blueprint)
+- [x] docker-compose.prod.yml
 
 ## Распределение авторов
 
