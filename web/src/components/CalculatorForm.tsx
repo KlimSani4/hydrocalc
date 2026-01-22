@@ -7,6 +7,14 @@ interface CalculatorFormProps {
 }
 
 /**
+ * Парсит число из строки, убирая ведущие нули
+ */
+function parseCount(value: string): number {
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+}
+
+/**
  * Форма калькулятора нормы воды
  */
 export default function CalculatorForm({ onSubmit, isLoading }: CalculatorFormProps) {
@@ -41,52 +49,60 @@ export default function CalculatorForm({ onSubmit, isLoading }: CalculatorFormPr
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Junior (1-3 курс)
+              Младшие (7-10 лет)
             </label>
             <input
               type="number"
               min="0"
-              value={juniorCount}
-              onChange={(e) => setJuniorCount(Number(e.target.value))}
+              value={juniorCount || ''}
+              onChange={(e) => setJuniorCount(parseCount(e.target.value))}
+              onBlur={(e) => e.target.value = String(juniorCount)}
+              placeholder="0"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-water-500 focus:border-water-500"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Middle (4-5 курс)
+              Средние (11-14 лет)
             </label>
             <input
               type="number"
               min="0"
-              value={middleCount}
-              onChange={(e) => setMiddleCount(Number(e.target.value))}
+              value={middleCount || ''}
+              onChange={(e) => setMiddleCount(parseCount(e.target.value))}
+              onBlur={(e) => e.target.value = String(middleCount)}
+              placeholder="0"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-water-500 focus:border-water-500"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Senior (магистратура)
+              Старшие (15-17 лет)
             </label>
             <input
               type="number"
               min="0"
-              value={seniorCount}
-              onChange={(e) => setSeniorCount(Number(e.target.value))}
+              value={seniorCount || ''}
+              onChange={(e) => setSeniorCount(parseCount(e.target.value))}
+              onBlur={(e) => e.target.value = String(seniorCount)}
+              placeholder="0"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-water-500 focus:border-water-500"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Staff (преподаватели)
+              Персонал (18+ лет)
             </label>
             <input
               type="number"
               min="0"
-              value={staffCount}
-              onChange={(e) => setStaffCount(Number(e.target.value))}
+              value={staffCount || ''}
+              onChange={(e) => setStaffCount(parseCount(e.target.value))}
+              onBlur={(e) => e.target.value = String(staffCount)}
+              placeholder="0"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-water-500 focus:border-water-500"
             />
           </div>
