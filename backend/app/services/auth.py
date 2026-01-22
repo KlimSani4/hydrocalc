@@ -3,7 +3,7 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordBearer
 
 from app.config import get_settings
@@ -12,7 +12,19 @@ from app.models.user import User
 
 settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# OAuth2 для login endpoint
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+
+
+def get_token_from_header(
+    x_auth_token: Optional[str] = Header(None, alias="X-Auth-Token")
+) -> Optional[str]:
+    """
+    Извлекает токен из заголовка X-Auth-Token.
+
+    Используется вместо Authorization чтобы обойти Istio JWT validation.
+    """
+    return x_auth_token
 
 
 class AuthService:
@@ -88,7 +100,7 @@ class AuthService:
 
 
 def get_current_user(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: Optional[str] = Depends(get_token_from_header),
     db: Session = Depends(get_db)
 ) -> User:
     """
@@ -125,7 +137,7 @@ def get_current_user(
 
 
 def get_current_user_optional(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: Optional[str] = Depends(get_token_from_header),
     db: Session = Depends(get_db)
 ) -> Optional[User]:
     """

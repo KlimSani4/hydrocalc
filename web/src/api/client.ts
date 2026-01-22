@@ -19,10 +19,11 @@ const api = axios.create({
 });
 
 // Интерсептор для добавления токена к запросам
+// Используем X-Auth-Token вместо Authorization чтобы обойти Istio JWT validation
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers['X-Auth-Token'] = token;
   }
   return config;
 });
