@@ -5,7 +5,7 @@
 История хранится только в оперативной памяти и очищается при перезапуске бота.
 """
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 MAX_HISTORY_SIZE = 5
