@@ -59,5 +59,4 @@ def root():
 @app.get("/sentry-debug")
 def trigger_error():
     """Тестовый endpoint для проверки Sentry."""
-    division_by_zero = 1 / 0
-    return {"status": "error"}
+    raise Exception("Sentry test error")
