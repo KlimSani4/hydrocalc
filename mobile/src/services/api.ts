@@ -13,9 +13,8 @@ import type {
   HistoryItem
 } from '../types';
 
-// URL API сервера (для локальной разработки)
-// В Android эмуляторе localhost не работает, нужен IP машины
-const API_URL = 'http://192.168.1.100:8000/api/v1';
+// URL API сервера
+const API_URL = 'https://hydrocalc.prdxso.dev/api/v1';
 
 // Создаём экземпляр axios
 const api: AxiosInstance = axios.create({
@@ -27,11 +26,12 @@ const api: AxiosInstance = axios.create({
 });
 
 // Интерцептор для добавления токена к запросам
+// Используем X-Auth-Token вместо Authorization чтобы обойти Istio JWT validation
 api.interceptors.request.use(
   async (config) => {
     const token = await getToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers['X-Auth-Token'] = token;
     }
     return config;
   },
