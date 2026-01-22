@@ -54,3 +54,10 @@ def root():
         "version": "1.0.0",
         "docs": "/docs"
     }
+
+
+@app.get("/sentry-debug")
+def trigger_error():
+    """Тестовый endpoint для проверки Sentry."""
+    division_by_zero = 1 / 0
+    return {"status": "error"}
