@@ -1,16 +1,28 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import auth_router, calculate_router, history_router
 from app.integrations import init_sentry
+from app.database import engine, Base
 
 # Инициализация Sentry (до создания приложения)
 init_sentry()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Создаёт таблицы при старте приложения."""
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
 app = FastAPI(
     title="HydroCalc API",
     description="API для расчёта потребления воды в школе",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Настройка CORS для веб-клиента
