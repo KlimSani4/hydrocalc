@@ -1,0 +1,49 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hydrocalc-api
+  namespace: dev-hydrocalc
+spec:
+  hosts:
+  - "hydrocalc.prdxso.dev"
+  gateways:
+  - istio-system/api-gateway
+  http:
+  # Health check
+  - match:
+    - uri:
+        exact: /health
+    route:
+    - destination:
+        host: backend.dev-hydrocalc.svc.cluster.local
+        port:
+          number: 8000
+
+  # API v1 routes
+  - match:
+    - uri:
+        prefix: /api/v1
+    route:
+    - destination:
+        host: backend.dev-hydrocalc.svc.cluster.local
+        port:
+          number: 8000
+
+  # Swagger docs
+  - match:
+    - uri:
+        prefix: /docs
+    route:
+    - destination:
+        host: backend.dev-hydrocalc.svc.cluster.local
+        port:
+          number: 8000
+
+  - match:
+    - uri:
+        prefix: /openapi.json
+    route:
+    - destination:
+        host: backend.dev-hydrocalc.svc.cluster.local
+        port:
+          number: 8000

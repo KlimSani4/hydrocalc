@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot
+  namespace: dev-hydrocalc
+  labels:
+    app: bot
+  annotations:
+    keel.sh/policy: force
+    keel.sh/match-tag: "true"
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bot
+  template:
+    metadata:
+      labels:
+        app: bot
+    spec:
+      containers:
+      - name: bot
+        image: ghcr.io/klimsani4/hydrocalc-bot:latest
+        imagePullPolicy: Always
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hydrocalc-secrets
+              key: BOT_TOKEN
+        - name: API_URL
+          value: "http://backend:8000/api/v1"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
