@@ -40,6 +40,7 @@ jobs:
       - name: Build
         env:
           VITE_API_URL: https://hydrocalc.prdxso.dev/api/v1
+          VITE_METRIKA_ID: "106387099"
         run: npm run build
 
       - name: Setup Pages
